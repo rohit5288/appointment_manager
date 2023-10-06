@@ -1,0 +1,85 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="{% static 'authentication.css' %}">
+<style>
+  input[type="password"]{
+    text-align: center;
+  }
+</style>
+<body>
+<center>
+<form action="{% url 'change_password' request.user.id %}" style="border:1px solid #ccc; width: 50%;" method ="POST" id="new_pwd_form">
+  {% csrf_token %}
+  <div class="container">
+    <h1>CHANGE PASSWORD</h1>
+    <hr>
+    <label for="new_pwd"><b>New Password</b></label>
+    <input type="password" placeholder="Enter new password"  name="new_pwd" id="new_password">
+    <p id ="new_error" style = "font-size:15px; color:rgb(228, 0, 0)"></p>
+
+    <label for="c_pwd"><b>Confirm Password</b></label>
+    <input type="password" placeholder="Enter confirm password" name="c_pwd">
+
+    <div class="clearfix">
+      <button id="btn" type="submit" style="float: none;background-color: #04AA6D;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;">Change Password</button>
+    </div>
+  </div>
+</form>
+</center>
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+
+<script>
+  $('#new_pwd_form').validate({
+    rules:{
+      new_pwd:{
+        required:true,
+      },
+      c_pwd:{
+        required:true,
+        equalTo:'#new_password',
+      },
+    },
+    messages:{
+      new_pwd:{
+        required:"* New Password Required"
+      },
+      c_pwd:{
+        required:"* Confirm Your New Password",
+        equalTo: "* Passwords do not matched."
+      }
+    }
+  })
+
+  $("#new_pwd_form").on('input',function(){
+    let val = $("#new_password").val()
+    let id = '{{request.user.id}}'
+    $.ajax({
+      url:"{% url 'validate_password' %}",
+      type:"GET",
+      data: {'id':id,'pwd':val},
+      success:function(data){
+        console.log(data)
+        if (data['is_exists']=='true'){
+          $("#new_error").html("* Password should be different from last password.")
+          $('#btn').prop('disabled',true).css('background-color','grey')
+        }
+        else{
+          $("#new_error").html("")
+          $('#btn').prop('disabled',false).css('background-color','#04AA6D')
+        }
+      }
+    })
+  })
+</script>

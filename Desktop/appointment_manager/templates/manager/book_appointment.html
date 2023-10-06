@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Form</title>
+    <link rel="stylesheet" href="{% static 'booking.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" ></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Appointment Form</h2>
+        <form action="{% url 'event_manager' %}" method="post" id="booking_form" autocomplete="off">
+            {% csrf_token %}
+            <label for="doctor">Doctor:</label>
+            <select name="doctor" id="doctor" required>
+                <option value="">Select Doctor</option>
+                {% for doctor in doctors%}
+                    {% if doctor %}
+                    <option value="{{doctor.id}}" >{{doctor.user.first_name}}&nbsp;{{doctor.user.last_name}} -- {{doctor.speciality}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" placeholder="Add Description for appointment" style="padding: 10px;margin-bottom: 15px;border: 1px solid #ccc;border-radius: 3px;" required/>
+            <select id="data" multiple hidden></select>
+            <label for="booking_date">Booking Date:</label>
+            <select name="booking_date" id="booking_date" required>
+                <option id="no_val_date">Select Appointment Date</option>
+            </select> <br>
+            <label for="slot">Slot:</label>
+            <select name="slot" id="slot" required>
+                <option id="no_val_opt">Select Your Slot</option>
+            </select> <br>
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" value="Ivy Hospital,Mohali" style="padding: 10px;margin-bottom: 15px;border: 1px solid #ccc;border-radius: 3px;" required/>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+$('#doctor').on('change',function(){
+    var doctor_id=$(this).val()
+    $.ajax({
+        url:"{% url 'load_dates' %}",
+        type:"GET",
+        data:{"id":doctor_id},
+        success:function(data){
+            var select = document.getElementById("booking_date");
+            var options = data['dates']
+                for(var i = 0; i < options.length; i++) {
+                    var opt = options[i]
+                    var el = document.createElement("option");
+                    el.textContent = opt;
+                    el.value = opt;
+                    select.appendChild(el);
+
+                }
+        }
+    })
+})
+$('#booking_date').on('change',function(){
+    var date=$('#booking_date').val()
+    var doctor_id=$('#doctor').val()
+    $.ajax({
+        url : "{% url 'load_slots' %}",
+        type:"GET",
+        data:{"id":doctor_id,"date":date},
+        success:function(data){
+            var select = document.getElementById("slot");
+            var options = data['slots']
+            if (options.length==0){
+                $("#no_val_opt").html("No Slots Available")
+                $("#slot").prop('disabled',true)
+            }
+            if( options.length>0){
+                $("#slot").prop('disabled',false)
+                $("#no_val_opt").html("Select Time Slot")
+                for(var i = 0; i < options.length; i++) {
+                    var opt = options[i]
+                    var el = document.createElement("option");
+                    el.textContent = opt[1];
+                    el.value = opt[0];
+                    select.appendChild(el);
+
+                }
+            }
+        }
+    })
+})
+
+</script>
+

@@ -1,0 +1,117 @@
+{% load static %}
+{% load tz %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>USERS LIST</title>
+    <link rel="stylesheet" href="{% static 'users_list.css' %}">
+    <link rel="stylesheet" href="{% static 'authentication.css' %}">
+    <script src="https://kit.fontawesome.com/30ec674694.js" crossorigin="anonymous"></script>
+</head>
+<style>
+  .logout_btn{
+    color: rgb(211, 3, 3);
+    font-size: 25px;
+  }
+  .logout_btn:hover{
+    color:rgb(255, 84, 84);
+  }
+</style>
+<body>
+  <div>
+    <h2>USERS LIST</h2>
+    <a style="position: absolute; top:2.3%; left: 94%; text-decoration: none;padding:6px 15px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 8px;" href = "{% url 'logout' %}"><i class="fa-solid fa-person-walking-dashed-line-arrow-right logout_btn"></i></a>
+    <a style="position: absolute; top:2.3%; left: 89%; text-decoration: none;padding:6px 15px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);border-radius: 8px;" href = "{% url 'pdf_user'%}"><i class="fa-solid fa-file-pdf" style="color: rgba(0, 0, 126, 0.555); font-size: 25px;"></i></a>
+    <a style="position: absolute; top:2.3%; left: 84%; text-decoration: none;padding:6px 15px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 8px;" href = "{% url 'csv_user'%}"><i class="fa-solid fa-file-csv" style="color: #ff7600; font-size: 25px;"></i></a>
+  </div>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Created On</th>
+    <th>Role</th>
+    <th>Action</th>
+  </tr>
+  <form action="{% url 'user_search' %}" method="post">
+    {% csrf_token %}
+    <tr>
+      <td></td>
+      <td>
+        <input type="text" name="username" placeholder="Search" style="border:2px solid #9493938f; padding: 3px;margin-bottom: 2px;background-color: #9493938f; color: white;">
+      <td>
+      <input type="text" name="name" placeholder="Search" style="border:2px solid #9493938f; padding: 3px;margin-bottom: 2px;background-color: #9493938f; color: white;">
+      </td>
+      <td>
+        <input type="text" name="email" placeholder="Search" style="border:2px solid #9493938f; padding: 3px;margin-bottom: 2px;background-color: #9493938f; color: white;">
+      </td>
+      <td>
+        <input type="date" name="created" style="border:2px solid #9493938f; padding: 3px;margin-bottom: 2px;background-color: #9493938f; color: white;">
+      </td>
+      <td></td>
+      <td>
+        <center><button style="padding:6px 9px 6px 9px; border: 1px solid rgb(14, 173, 14); background-color: rgb(14, 173, 14); color:white; max-width: 70px;" type="submit">Find</button></center>
+      </td>
+    </tr>
+  </form>
+  {%  if not users %}
+    <center>
+      <p style="color:rgb(211, 3, 3)">*No User found</p>
+    </center>
+  {% else %}
+    {% for user in users %}
+      <tr>
+        <td>{{user.id}}</td>
+        <td>{{user.username}}</td>
+        <td>{{user.first_name}} {{user.last_name}}</td>
+        <td>{{user.email}}</td>
+        <td>{{ user.created}}</td>
+        <td>
+          {% if user.role == 1 %}
+            Doctor
+          {% elif user.role == 2 %}
+            Patient
+          {% endif %}
+        </td>
+        <td>
+          <center>
+            <a style="text-decoration: none; color: white; padding:6px; border: 1px solid rgb(14, 173, 14); background-color: rgb(14, 173, 14); color:white;" href = "{% url 'view_user' user.id %}">View</a>
+            <a style="text-decoration: none; color: white; padding:6px; border: 1px solid rgb(14, 173, 14); background-color: rgb(14, 173, 14); color:white;" href = "{% url 'edit_user' user.id %}">Edit user</a>
+            <a style="text-decoration: none; color: white; padding:6px; border: 1px solid rgb(14, 173, 14); background-color: rgb(14, 173, 14); color:white;" href = "/impersonate/{{user.id}}/" target="_private">IMPERSONATE</a>
+          </button></center>
+        </td>
+      </tr>
+    {% endfor %}
+  {% endif %}
+</table><br>
+<h1>GROUPS</h1>
+<table>
+  <tr>
+    <th>GROUP</th>
+    <th>USERS</th>
+    <th>PERMISSIONS</th>
+    <th>ACTIONS</th>
+  </tr>
+  {% for group in groups %}
+    <tr>
+      <td>{{group.name}}</td>
+      <td>
+        {% for user in group.user_set.all %}
+          {{user}} <br>
+        {% endfor %}
+      </td>
+      <td>
+        {% for permission in group.permissions.all %}
+          {{permission}} <br>
+        {% endfor %}
+      </td>
+      <td>
+        <a style="text-decoration: none; color: white; padding:6px; border: 1px solid rgb(14, 173, 14); background-color: rgb(14, 173, 14); color:white;" href = "{% url 'permissions' group.id %}">+ADD</a> &emsp;
+        <a style="text-decoration: none; color: white; padding:6px; border: 1px solid rgb(14, 173, 14); background-color: rgb(14, 173, 14); color:white;" href = "{% url 'permissions_update' group.id %}">UPDATE</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+</body>
+</html>

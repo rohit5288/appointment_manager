@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    h2,.search{
+    width: 50%;
+}
+.search{
+    padding: 23px;
+}
+input[type='text']{
+    padding: 3px;
+    margin-bottom: 2px;
+    background-color: #949393;
+}
+table{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-collapse: collapse;
+    min-width: 60%;
+}
+th{
+    font-weight: 600;
+    padding: 6px;
+    background-color: rgba(0, 0, 126, 0.555);
+    color: white;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+tr ,td{
+    border-collapse: collapse;
+    padding: 6px;
+    border: 1px solid black;
+}
+
+  </style>
+</head>
+<body>
+  <div>
+    <h2>USERS LIST</h2>
+  </div>
+<table >
+  <tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Created On</th>
+  </tr>
+  {% for user in users %}
+    <tr>
+      <td>{{user.id}}</td>
+      <td>{{user.username}}</td>
+      <td>{{user.first_name}} {{user.last_name}}</td>
+      <td>{{user.email}}</td>
+      <td>{{user.created}}</td>
+    </tr>
+  {% endfor %}
+</table>
+</body>
+</html>
+

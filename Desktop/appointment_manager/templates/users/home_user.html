@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME</title>
+    <link rel="stylesheet" href="{% static 'authentication.css' %}">
+    <script src="https://kit.fontawesome.com/30ec674694.js" crossorigin="anonymous"></script>
+    <style>
+        table{
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-collapse: collapse;
+            min-width: 60%;
+        }
+        th{
+            font-weight: 600;
+            padding: 6px;
+            background-color: rgba(0, 0, 126, 0.555);
+            color: white;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        tr ,td{
+            border-collapse: collapse;
+            padding: 6px;
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Hi! {{request.user.first_name}} {{request.user.last_name}}</h1>
+        <h3>Email: {{request.user.email}}</h3>
+        <h3> Username: {{request.user}}</h3>
+        {% if request.user.role == 1 %}
+        {% if schedule %}
+        <div>
+        <h1>SCHEDULE</h1>
+        <table>
+            <tr>
+                <th>NAME</th>
+                <th>DATE RANGE</th>
+                <th>WEEKDAYS</th>
+                <th>OPENING HOURS</th>
+                <th>BREAK HOURS</th>
+                <th>ACTIONS</th>
+
+            </tr>
+            <tr>
+                <td>{{schedule.doctor.user.first_name}}&nbsp;{{schedule.doctor.user.last_name}}</td>
+                <td>{{schedule.fromdate}} to {{schedule.todate}}</td>
+                <td>
+                    {% for day in days %}
+                        {{day}} &nbsp;
+                    {% endfor %}
+                </td>
+                <td>{{schedule.openingtime}} to {{schedule.closingtime}}</td>
+                <td>{{schedule.breakstart}} to {{schedule.breakend}}</td>
+                <td><button id="delete_btn" schedule_id="{{schedule.id}}" style="background:none; border: none;"><i class="fa-solid fa-trash"  style="color:#d60000; font-size: 18px;" ></i></button>&nbsp;
+                </td>
+            </tr>
+        </table>
+            <p id="not_deleted_message" style="color: #d60000; font-size: 15px; width: 100%; display: block;"></p>
+        {% else %}
+            <p style="color: #868686; font-size: 19px; width: 100%; display: block;">No Schedule Found</p>
+            <br><br>
+            <p id="deleted_message" style="color: #868686; font-size: 19px; width: 100%; display: block;"></p>
+            <div class="login-row row button">
+                <a style="float: none; margin-right: 0; text-decoration: none; color:white;" class="cancelbtn" href="{% url 'schedule'%}">Add Schedule</a>
+            </div>
+        </div>
+        {% endif %}
+        {% if bookings %}
+            <div>
+                <h1>APPOINTMENT</h1>
+                <table>
+                    <tr>
+                        <th>PATIENT NAME</th>
+                        <th>DOCTOR</th>
+                        <th>APPOINTMENT DATE</th>
+                        <th>TIME SLOT</th>
+                    </tr>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{booking.patient.user.first_name}}&nbsp;{{booking.patient.user.last_name}}</td>
+                            <td>Dr. {{booking.doctor.user.first_name}}&nbsp;{{booking.doctor.user.last_name}}</td>
+                            <td>{{booking.booking_date}}</td>
+                            <td>{{booking.start}} to {{booking.end}}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% else %}
+            <p style="color: #868686; font-size: 19px; width: 100%; display: block;">No Appointment Found</p>
+        {% endif %}
+        {% endif %}
+        {% if request.user.role == 2 %}
+        {% if booking %}
+        <h1>APPOINTMENT</h1>
+        <table>
+            <tr>
+                <th>NAME</th>
+                <th>DOCTOR</th>
+                <th>APPOINTMENT DATE</th>
+                <th>TIME SLOT</th>
+                <th>ACTIONS</th>
+
+            </tr>
+            {% for booking in booking %}
+                <tr>
+                    <td>{{booking.patient.user.first_name}}&nbsp;{{booking.patient.user.last_name}}</td>
+                    <td>{{booking.doctor.user.first_name}}&nbsp;{{booking.doctor.user.last_name}}</td>
+                    <td>{{booking.booking_date}}</td>
+                    <td>{{booking.start}} to {{booking.end}}</td>
+                    <td>
+                        <a id="delete_event" style="text-decoration: none;" booking_id="{{booking.id}}" event_id="{{booking.eventid}}"><i class="fa-solid fa-trash"  style="color:#d60000; font-size: 18px;" ></i></a>&nbsp;
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p id="deleted_message" style="color: #d60000; font-size: 15px; width: 100%; display: block;"></p>
+        {% else %}
+            <p style="color: #868686; font-size: 19px; width: 100%; display: block;">No Appointment Found</p>
+        {% endif %} <br><br>
+            <div class="login-row row button">
+                <a style="float: none; margin-right: 0; text-decoration: none; color:white;" class="cancelbtn" href="{% url 'calendar_init'%}">Book Appointment</a>
+            </div>
+        {% endif %}
+        <br><br>
+        <div class="login-row row button" style="display: block;">
+            <a style="float: none; margin-right: 0; text-decoration: none; color:white;" class="cancelbtn" href="{% url 'logout' %}">Log out</a>
+            <a style="float: none; margin-right: 0; text-decoration: none; color:white;" class="cancelbtn" href="{% url 'change_password' request.user.id %}">Change Password</a>
+        </div>
+    </center>
+</body>
+</html> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+    $('#delete_btn').on('click',function(){
+        var schedule_id=$(this).attr('schedule_id')
+        $.ajax({
+            url:"{% url 'delete_schedule' %}",
+            type:"GET",
+            data:{'id':schedule_id},
+            success: function(data){
+                if (data['deleted']=='true'){
+                    location.reload()
+                    $('#deleted_message').html('Schedule Deleted Successfully')
+                }
+                if (data['deleted']=='false'){
+                    $('#not_deleted_message').html('*You cannot delete schedule as Patient appointments had been scheduled.')
+                }
+            }
+        })
+    })
+
+    $('#delete_event').on('click',function(){
+        var booking_id=$(this).attr('booking_id');
+        var event_id=$(this).attr('event_id');
+        $.ajax({
+            url:"{% url 'delete_event' %}",
+            type:"GET",
+            data:{'bookingid':booking_id,'eventid':event_id},
+            success: function(data){
+                if (data['deleted']=='true'){
+                    location.reload()
+                    $('#deleted_event').html('Appointment Deleted Successfully')
+                }
+            }
+        })
+    })
+</script>

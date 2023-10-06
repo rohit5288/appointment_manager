@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile:{{user.first_name}}</title>
+    <link rel="stylesheet" href="{% static 'authentication.css' %}">
+</head>
+<body style="line-height: 40px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 30px;">
+    <center>
+        <img src="{{user.profile_pic.url}}" alt="Profile Picture" width="150" height="150"> <br>
+        Name:   {{user.first_name}} {{user.last_name}} <br>
+        Email:  {{user.email}} <br>
+        Created On: {{user.created}} <br>
+        Status:  {% if user.status == 1 %}
+        <span>Active</span>
+        {% elif user.status == 2%}
+        <span>In Active</span>
+        {% else %}
+        <span>Deleted</span>
+        {% endif %}
+    </center>
+</body>
+</html>

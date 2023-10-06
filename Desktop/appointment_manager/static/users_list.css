@@ -1,0 +1,26 @@
+h2,.search{
+    width: 50%;
+}
+.search{
+    padding: 23px;
+}
+input[type='text']{
+    padding: 3px;
+    margin-bottom: 2px;
+    background-color: #949393;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th ,p{
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }

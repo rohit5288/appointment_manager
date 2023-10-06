@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<!-- Created By CodingLab - www.codinglabweb.com -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>LOGIN</title> 
+     <link rel="stylesheet" href="{% static 'authentication.css' %}">
+     <script src="https://kit.fontawesome.com/30ec674694.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="wrapper" style="border:1px solid #ccc; padding: 30px; padding-bottom: 7%;">
+        <div class="title"><h1>LOGIN FORM</h1></div>
+        <form action="{% url 'login' %}" method="post" id="loginform" style="top: 4% !important;">
+          {% csrf_token %}
+          <div class="login-row row">
+            <i class="fas fa-user"></i>
+            <input class="login-input" type="text" placeholder="Username or Email" name="user">
+          </div>
+          <div class="login-row row">
+            <i class="fas fa-lock"></i>
+            <input class="login-input" type="password" placeholder="Password" name="psw">
+          </div>
+          <div>
+            <div style="margin:0 15px 0 0; font-size: 20px; font-weight: bo;"><button type="submit" class="signupbtn">LOGIN&nbsp;<i class="fa-solid fa-right-to-bracket fa-shake"></i></button></div><br>
+            <div class="link"> &nbsp; Not a member? <a style="background-color:#ffffff;" href="{% url 'signup' %}">Signup now</a></div>
+          </div>
+        </form>
+      </div>
+      {% if messages %}
+      <div>
+        {% for message in messages %}
+          <p style="color: red; background-color: #ccc; width: 100%; padding: 10px;">{{message}}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script>
+$('#loginform').validate({
+  rules:{
+    user:{
+      required:true,
+    },
+    psw:{
+      required:true,
+    },
+  },
+  messages:{
+    user:{
+      required:"* Required"
+    },
+    psw:{
+      required:"* Required"
+    }
+  }
+
+})
+</script>

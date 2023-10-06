@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN PANEL</title>
+    <link rel="stylesheet" href="{% static 'authentication.css' %}">
+    <script src="https://kit.fontawesome.com/30ec674694.js" crossorigin="anonymous"></script>
+    <style>
+        table{
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                border-collapse: collapse;
+                min-width: 60%;
+            }
+        th{
+            font-weight: 600;
+            line-height: 40px;
+            padding: 6px;
+            background-color: rgba(0, 0, 126, 0.555);
+            color: white;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        tr ,td{
+            border-collapse: collapse;
+            padding: 6px;
+            border: 1px solid black;
+        }
+        tr:nth-child(even) {
+            background-color: #e6c5c3;
+        }
+        .print_btn_container{
+            position: absolute;
+            left:85%;
+            top: 4%;
+        }
+        .print_btn,.pdf_btn{
+            float: none; 
+            margin-right: 0; 
+            text-decoration: none; 
+            color:white; 
+            padding: 8px; 
+            border-radius: 3px;
+            background-color: rgba(2, 173, 2, 0.74);
+            box-shadow: 0px 11px 11px rgba(0, 0, 0, 0.315);
+        }
+        .print_btn:hover,.pdf_btn:hover{
+            background-color: rgb(2, 173, 2);
+            box-shadow: 0px 6px 6px rgba(0, 0, 0, 0.315);
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>ADMIN PANEL</h1>
+        <div class="print_btn_container">
+            <a href="{% url 'print_doctors_details' %}"  class="print_btn"><i class="fa-solid fa-print" style="color: white;"></i></a>&emsp;
+            <a href="{% url 'csv_doctors_details' %}"  class="pdf_btn" ><i class="fa-solid fa-file-csv" style="color: white;"></i></a>
+        </div>
+        <hr>
+        <table>
+            <tr>
+                <th>NAME</th>
+                <th>SPECIALITY</th>
+                <th>DATE RANGE</th>
+                <th>WEEKDAYS</th>
+                <th>OPENING HOURS</th>
+                <th>BREAK HOURS</th>
+                <th>BOOKINGS</th>
+
+            </tr>
+            {% for doctor,bookings,days in data %}
+                    <tr>
+                        <td><b>Dr. {{doctor.user.first_name}} {{doctor.user.last_name}}</b></td>
+                        <td>{{doctor.speciality}}</td>
+                        <td>{{doctor.schedule.fromdate}} to {{doctor.schedule.todate}}</td>
+                        <td style="text-align: left;">
+                            <ul>
+                            {% for day in days %}
+                                <li>{{day}}</li>
+                            {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{doctor.schedule.openingtime}} to {{doctor.schedule.closingtime}}</td>
+                        <td>{{doctor.schedule.breakstart}} to {{doctor.schedule.breakend}}</td>
+                        <td>
+                            {% for booking in bookings %}
+                                {{booking.start}} to {{booking.end}} on {{booking.booking_date}} by <b>Mr. {{booking.patient.user.first_name}} {{booking.patient.user.last_name}}</b> <br>
+                            {% endfor %}
+                        </td>
+                    </tr>
+            {% endfor %}
+            </table><br><br>
+            <hr>
+        <div class="login-row row button">
+            <a style="float: none; margin-right: 0; text-decoration: none; color:white;" class="cancelbtn" href="{% url 'logout' %}">Log out</a>
+            <a style="float: none; margin-right: 0; text-decoration: none; color:white;" class="cancelbtn" href="{% url 'user_list'%}">User List</a>
+        </div>
+    </center>
+</body>
+</html> 
